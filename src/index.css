@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+/*
+ * Palette : fusion de la direction éditoriale "afrofuturisme enraciné"
+ * (noir baobab, sable de Joal, rouge bissap, jaune soleil, indigo poussiéreux)
+ * avec les tokens existants du projet, pour ne rien casser dans les composants.
+ */
+@theme {
+  --font-display: "Fraunces", serif;
+  --font-body: "Inter", sans-serif;
+
+  --color-cream: #F7F1E1;
+  --color-cream-dark: #EDE0C8;
+  --color-ink: #191510;
+  --color-ink-light: #2B2116;
+  --color-terracotta: #B83C2F;
+  --color-terracotta-dark: #8F2D24;
+  --color-gold: #E0AC54;
+  --color-gold-dark: #A6752A;
+  --color-forest: #23543B;
+  --color-forest-dark: #163823;
+  --color-charcoal: #161411;
+  --color-charcoal-light: #241D16;
+  --color-indigo: #21374A;
+  --color-indigo-dark: #172836;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  overflow-x: hidden;
+}
+
+main {
+  padding-bottom: 0;
+}
+
+@media (max-width: 1023px) {
+  main {
+    padding-bottom: 82px;
+  }
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.site-grain {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.16) 0.7px, transparent 0.7px);
+  background-size: 8px 8px;
+}
+
+.glass-panel {
+  background: rgba(248, 243, 233, 0.1);
+  border: 1px solid rgba(248, 243, 233, 0.2);
+  backdrop-filter: blur(16px);
+}
+
+.nav-scroll {
+  scrollbar-width: none;
+}
+
+.nav-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.reveal-up {
+  animation: reveal-up 800ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Marquee for the "Gardiens de nos Legendes" ribbon */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes media-fade {
+  from { opacity: 0; transform: scale(1.03); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+/* Visible keyboard focus ring across the site */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-terracotta);
+  outline-offset: 2px;
+}
