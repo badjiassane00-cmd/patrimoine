@@ -3,6 +3,8 @@ import cors from "cors";
 import express from "express";
 import Anthropic from "@anthropic-ai/sdk";
 import webpush from "web-push";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import {
     dbConfigured,
     deletePushSubscription,
@@ -14,6 +16,9 @@ import {
     saveQuizScore,
 } from "./db.js";
 import { siteKnowledge, storytellerPrompt } from "./knowledge.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const distDir = path.join(__dirname, "..", "dist");
 
 const app = express();
 const port = Number(process.env.PORT || 8787);
@@ -96,6 +101,7 @@ function localStory(subject, tone) {
 
 app.use(cors({ origin: allowedOrigin }));
 app.use(express.json({ limit: "32kb" }));
+app.use(express.static(distDir));
 
 function rateLimit(request, response, next) {
     const now = Date.now();
@@ -263,6 +269,13 @@ app.get("/api/quiz/leaderboard", async (_request, response) => {
     if (!dbConfigured) return response.json({ configured: false, leaderboard: [] });
     const leaderboard = await getLeaderboard(10);
     return response.json({ configured: true, leaderboard });
+});
+
+// Renvoie l'application React pour toute route qui n'est ni un fichier
+// statique ni une route /api/* : indispensable pour que la navigation React
+// Router fonctionne (ex. recharger directement /collections en production).
+app.get(/^(?!\/api\/).*/, (_request, response) => {
+    response.sendFile(path.join(distDir, "index.html"));
 });
 
 migrate()
