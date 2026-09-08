@@ -10,11 +10,20 @@ export const dbConfigured = Boolean(process.env.DATABASE_URL);
 export const pool = dbConfigured
     ? new Pool({
           connectionString: process.env.DATABASE_URL,
+          max: 10,
+          connectionTimeoutMillis: 5_000,
+          idleTimeoutMillis: 30_000,
           ssl: process.env.DATABASE_URL.includes("localhost") || process.env.DATABASE_SSL === "false"
               ? false
               : { rejectUnauthorized: false },
       })
     : null;
+
+if (pool) {
+    pool.on("error", (error) => {
+        console.error("Erreur inattendue du pool PostgreSQL :", error.message);
+    });
+}
 
 function toSubscriptionShape(row) {
     return { endpoint: row.endpoint, keys: { p256dh: row.p256dh, auth: row.auth } };

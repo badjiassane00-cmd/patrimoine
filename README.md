@@ -41,3 +41,26 @@ Sans clé `ANTHROPIC_API_KEY`, le chatbot "Le Griot" répond quand même grâce
 npm run build   # génère dist/
 npm run start   # sert le build + l'API sur le port défini par PORT (8787 par défaut)
 ```
+
+## Déployer sur Render
+
+Le dépôt contient un [render.yaml](../render.yaml) prêt pour un **Web Service Node**. Il utilise `teranga-final` comme répertoire racine, installe les dépendances avec le lockfile, génère `dist/`, puis démarre Express.
+
+Configuration équivalente si le service est créé manuellement :
+
+- **Root Directory** : `teranga-final`
+- **Runtime** : Node
+- **Build Command** : `npm ci && npm run build`
+- **Start Command** : `npm start`
+- **Health Check Path** : `/api/health`
+- **Version Node** : `20.19.0` ou une version 20 ultérieure compatible avec Vite 8
+
+Variables d'environnement :
+
+- `DATABASE_URL` : URL interne de la base PostgreSQL Render. Elle est optionnelle, mais nécessaire pour conserver les scores et abonnements après un redémarrage.
+- `ANTHROPIC_API_KEY` : optionnelle. Sans elle, le chat et le Conteur utilisent leurs réponses locales de secours.
+- `ANTHROPIC_MODEL` : optionnelle, avec `claude-3-5-haiku-latest` par défaut.
+- `CLIENT_ORIGIN` : à renseigner uniquement si le frontend est servi depuis une autre origine; pour ce service monolithique, les appels `/api/*` sont relatifs et fonctionnent sur le même domaine.
+- `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_CONTACT` : optionnelles, uniquement pour les notifications push.
+
+Si `DATABASE_URL` est absente ou momentanément indisponible, le serveur démarre tout de même afin que Render puisse valider `/api/health`; la migration est réessayée au prochain redémarrage. Vérifiez ensuite les logs Render pour corriger l'URL ou les droits PostgreSQL.

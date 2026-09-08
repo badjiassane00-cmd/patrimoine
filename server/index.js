@@ -22,6 +22,7 @@ const distDir = path.join(__dirname, "..", "dist");
 
 const app = express();
 const port = Number(process.env.PORT || 8787);
+const host = process.env.HOST || "0.0.0.0";
 const allowedOrigin = process.env.CLIENT_ORIGIN || "http://localhost:5173";
 const clients = new Map();
 
@@ -278,8 +279,18 @@ app.get(/^(?!\/api\/).*/, (_request, response) => {
     response.sendFile(path.join(distDir, "index.html"));
 });
 
-migrate()
-    .catch((error) => console.error("Échec de la migration de la base de données :", error.message))
-    .finally(() => {
-        app.listen(port, () => console.log(`Griot backend listening on http://localhost:${port}`));
-    });
+const server = app.listen(port, host, () => {
+    console.log(`Griot backend listening on http://${host}:${port}`);
+});
+
+server.on("error", (error) => {
+    console.error("Impossible de démarrer le serveur HTTP :", error.message);
+    process.exitCode = 1;
+});
+
+// Le serveur HTTP doit être disponible immédiatement pour le health check Render.
+// La migration est ensuite tentée avec un délai PostgreSQL borné; une base absente
+// ou momentanément indisponible ne doit pas empêcher le site de démarrer.
+void migrate().catch((error) => {
+    console.error("Échec de la migration de la base de données :", error.message);
+});
