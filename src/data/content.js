@@ -301,10 +301,10 @@ export const destinations = [
 ];
 
 export const lodges = [
-  { name: "Lodge de la Réserve de Bandia", location: "THIÈS", price: "85€/nuit", rating: 4, palette: "forest", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Giraffe_in_Bandia_reserve_near_Dakar_Senegal.jpg/960px-Giraffe_in_Bandia_reserve_near_Dakar_Senegal.jpg" },
-  { name: "Hôtel de la Poste", location: "SAINT-LOUIS", price: "120€/nuit", rating: 4, palette: "ink", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Saint-Louis_maisons_coloniales.jpg?width=900" },
-  { name: "Campement Le Baobab", location: "CASAMANCE", price: "45€/nuit", rating: 3, palette: "gold", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Mangroves_in_Casamance.jpg?width=900" },
-  { name: "Résidence Océan", location: "SALY", price: "95€/nuit", rating: 4, palette: "dusk", image: "https://upload.wikimedia.org/wikipedia/commons/2/23/Saly-beach-01.jpg" },
+  { name: "Lodge de la Réserve de Bandia", location: "THIÈS", price: "55 000 FCFA/nuit", rating: 4, palette: "forest", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Giraffe_in_Bandia_reserve_near_Dakar_Senegal.jpg/960px-Giraffe_in_Bandia_reserve_near_Dakar_Senegal.jpg" },
+  { name: "Hôtel de la Poste", location: "SAINT-LOUIS", price: "80 000 FCFA/nuit", rating: 4, palette: "ink", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Saint-Louis_maisons_coloniales.jpg?width=900" },
+  { name: "Campement Le Baobab", location: "CASAMANCE", price: "30 000 FCFA/nuit", rating: 3, palette: "gold", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Mangroves_in_Casamance.jpg?width=900" },
+  { name: "Résidence Océan", location: "SALY", price: "65 000 FCFA/nuit", rating: 4, palette: "dusk", image: "https://upload.wikimedia.org/wikipedia/commons/2/23/Saly-beach-01.jpg" },
 ];
 
 export const unescoSites = [

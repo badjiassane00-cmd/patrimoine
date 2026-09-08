@@ -99,7 +99,7 @@ export default function Header() {
         </div>
 
         <button
-          className="min-h-11 min-w-11 p-2 lg:hidden"
+        className="ml-auto min-h-11 min-w-11 p-2 lg:hidden"
           onClick={() => { vibrate(8); setOpen(!open); }}
           aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
           aria-expanded={open}
