@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, Menu, X } from "lucide-react";
+import { Search, Menu, X, UserRound } from "lucide-react";
 import { destinations, expositions, historicalFigures, snapshots, videos } from "../data/content";
 import TerangaMark from "./TerangaMark";
 import { vibrate } from "../lib/mobile";
+import { useAuth } from "../hooks/useAuth";
 
 const NAV_LINKS = [
   { label: "Découvrir", href: "/" },
@@ -19,6 +20,8 @@ export default function Header() {
   const [query, setQuery] = useState("");
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
+  const accountHref = user?.role === "admin" ? "/admin" : user ? "/espace" : "/connexion";
   const [lastPathname, setLastPathname] = useState(location.pathname);
   const searchableItems = [
     ...expositions.map((item) => ({ title: item.title, type: "Exposition", href: "/collections#expositions" })),
@@ -83,6 +86,7 @@ export default function Header() {
         </nav>
 
         <div className="hidden shrink-0 items-center gap-3 lg:flex">
+          <Link to={accountHref} className={`inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-semibold transition-colors ${scrolled ? "bg-ink text-cream hover:bg-terracotta" : "bg-terracotta text-cream hover:bg-terracotta-dark"}`}><UserRound size={14} />{user ? "Mon espace" : "Connexion"}</Link>
           <div className="flex items-center gap-1 text-xs font-semibold text-ink/60">
                 <button className="rounded px-1.5 py-0.5 text-gold">FR</button>
             <span aria-hidden="true">/</span>
@@ -99,7 +103,7 @@ export default function Header() {
         </div>
 
         <button
-        className="ml-auto min-h-11 min-w-11 p-2 lg:hidden"
+          className="ml-auto min-h-11 min-w-11 p-2 lg:hidden"
           onClick={() => { vibrate(8); setOpen(!open); }}
           aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
           aria-expanded={open}
@@ -127,6 +131,7 @@ export default function Header() {
                 </Link>
               </li>
             ))}
+            <li><Link to={accountHref} onClick={() => setOpen(false)} className="flex min-h-12 items-center gap-2 border-t border-ink/10 pt-2 text-base font-semibold text-terracotta"><UserRound size={17} />{user ? "Mon espace" : "Connexion / Inscription"}</Link></li>
           </ul>
         </nav>
       )}

@@ -1,10 +1,5 @@
-import { useEffect } from "react";
-import { BrowserRouter, Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import AgendaPage from "./pages/AgendaPage";
-import CollectionsPage from "./pages/CollectionsPage";
-import ExplorationPage from "./pages/ExplorationPage";
-import HomePage from "./pages/HomePage";
-import RecitsPage from "./pages/RecitsPage";
+import { lazy, Suspense, useEffect } from "react";
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Footer from "./components/Footer";
 import GriotChat from "./components/GriotChat";
 import Header from "./components/Header";
@@ -13,6 +8,16 @@ import InstallPrompt from "./components/InstallPrompt";
 import BandeauHorsLigne from "./components/BandeauHorsLigne";
 import { useSwipe } from "./hooks/useSwipe";
 import { vibrate } from "./lib/mobile";
+import { AuthProvider } from "./contexts/AuthContext";
+import { useAuth } from "./hooks/useAuth";
+const AccountPage = lazy(() => import("./components/AccountPage"));
+const AdminSpacePage = lazy(() => import("./pages/AdminSpacePage"));
+const ClientSpacePage = lazy(() => import("./pages/ClientSpacePage"));
+const AgendaPage = lazy(() => import("./pages/AgendaPage"));
+const CollectionsPage = lazy(() => import("./pages/CollectionsPage"));
+const ExplorationPage = lazy(() => import("./pages/ExplorationPage"));
+const HomePage = lazy(() => import("./pages/HomePage"));
+const RecitsPage = lazy(() => import("./pages/RecitsPage"));
 
 // Même ordre que la barre de navigation mobile (MobileNav.jsx), pour que le
 // swipe suive l'ordre visuel des onglets.
@@ -45,7 +50,7 @@ function ScrollManager() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AppShell />
+      <AuthProvider><AppShell /></AuthProvider>
     </BrowserRouter>
   );
 }
@@ -58,6 +63,9 @@ function AppShell() {
   const navigate = useNavigate();
   const location = useLocation();
   const currentIndex = PAGE_ORDER.indexOf(location.pathname);
+  const inAccountSpace = ["/connexion", "/inscription"].includes(location.pathname)
+    || location.pathname.startsWith("/espace")
+    || location.pathname.startsWith("/admin");
 
   // Balayer vers la gauche/droite change de page, dans l'ordre des onglets
   // de la barre mobile — un geste natif que l'on attend d'une vraie app.
@@ -83,20 +91,30 @@ function AppShell() {
     pageSwipe.onTouchStart(event);
   };
 
+  if (inAccountSpace) {
+    return <><ScrollManager /><Suspense fallback={<RouteLoading />}><Routes>
+      <Route path="/connexion" element={<AccountPage />} />
+      <Route path="/inscription" element={<AccountPage initialMode="register" />} />
+      <Route path="/espace/*" element={<ProtectedSpace role="client"><ClientSpacePage /></ProtectedSpace>} />
+      <Route path="/admin/*" element={<ProtectedSpace role="admin"><AdminSpacePage /></ProtectedSpace>} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes></Suspense></>;
+  }
+
   return (
     <div className="min-h-screen bg-cream">
       <ScrollManager />
       <BandeauHorsLigne />
       <Header />
       <main onTouchStart={guardedTouchStart} onTouchEnd={pageSwipe.onTouchEnd}>
-        <Routes>
+        <Suspense fallback={<RouteLoading />}><Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/collections" element={<CollectionsPage />} />
           <Route path="/recits" element={<RecitsPage />} />
           <Route path="/exploration" element={<ExplorationPage />} />
           <Route path="/agenda" element={<AgendaPage />} />
           <Route path="*" element={<HomePage />} />
-        </Routes>
+        </Routes></Suspense>
       </main>
       <Footer />
       <MobileNav />
@@ -104,4 +122,17 @@ function AppShell() {
       <GriotChat />
     </div>
   );
+}
+
+function RouteLoading() {
+  return <div className="grid min-h-[55vh] place-items-center text-sm text-ink/55" role="status">Chargement de la page…</div>;
+}
+
+function ProtectedSpace({ role, children }) {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+  if (loading) return <div className="grid min-h-screen place-items-center bg-cream text-sm text-ink/55">Ouverture de votre espace…</div>;
+  if (!user) return <Navigate to="/connexion" replace state={{ from: location.pathname }} />;
+  if (user.role !== role) return <Navigate to={user.role === "admin" ? "/admin" : "/espace"} replace />;
+  return children;
 }

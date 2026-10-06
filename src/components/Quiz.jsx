@@ -37,7 +37,7 @@ export default function Quiz() {
   const [saving, setSaving] = useState(false);
   const [onlineLeaderboard, setOnlineLeaderboard] = useState(null); // null = pas encore su, [] = vide, array = chargé
 
-  // Le classement réel vit en base de données (voir server/db.js). Tant que
+  // Le classement réel vit en base de données (voir server/infrastructure/database.js). Tant que
   // la requête n'a pas répondu, ou si aucune base n'est configurée, on
   // affiche les scores de démonstration pour que la section ne soit jamais vide.
   useEffect(() => {

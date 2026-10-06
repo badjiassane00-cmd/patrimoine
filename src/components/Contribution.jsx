@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { ArrowRight, CheckCircle2, X } from "lucide-react";
+import { ArrowRight, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import PlaceholderImage from "./PlaceholderImage";
 
 export default function Contribution() {
   const [modal, setModal] = useState(null);
-  const [sent, setSent] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const contributionPath = user?.role === "admin" ? "/admin" : user ? "/espace" : "/inscription";
 
   return (
     <>
@@ -25,7 +29,7 @@ export default function Contribution() {
               en partageant votre trésor familial.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <button type="button" onClick={() => { setModal("contribution"); setSent(false); }} className="inline-flex items-center gap-2 rounded bg-gold px-5 py-3 text-sm font-semibold text-ink hover:bg-gold/90">
+              <button type="button" onClick={() => navigate(contributionPath)} className="inline-flex items-center gap-2 rounded bg-gold px-5 py-3 text-sm font-semibold text-ink hover:bg-gold/90">
                 DÉPOSER UNE CONTRIBUTION
                 <ArrowRight size={15} />
               </button>
@@ -79,7 +83,7 @@ export default function Contribution() {
           {subscribed && <p className="mt-4 text-sm font-semibold text-forest">Inscription confirmée. Merci de suivre notre patrimoine.</p>}
         </div>
       </section>
-      {modal && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-5" role="dialog" aria-modal="true" aria-label="Contribution"><div className="relative w-full max-w-lg rounded bg-cream p-7 text-ink"><button type="button" onClick={() => setModal(null)} className="absolute right-3 top-3 rounded-full bg-ink/10 p-2" aria-label="Fermer"><X size={18} /></button>{modal === "guide" ? <><h3 className="font-display text-3xl">Guide des archives</h3><p className="mt-4 text-sm leading-relaxed text-ink/70">Préparez une image nette, indiquez sa date et son lieu, puis précisez les droits de diffusion dont vous disposez.</p><button type="button" onClick={() => setModal(null)} className="mt-6 rounded bg-forest px-4 py-2.5 text-sm font-semibold text-cream">J'ai compris</button></> : sent ? <div className="py-8 text-center"><CheckCircle2 size={44} className="mx-auto text-forest" /><h3 className="mt-4 font-display text-3xl">Contribution reçue</h3><p className="mt-3 text-sm text-ink/60">Notre équipe vérifiera votre archive avant publication.</p></div> : <><h3 className="font-display text-3xl">Déposer une contribution</h3><form onSubmit={(event) => { event.preventDefault(); setSent(true); }} className="mt-6 space-y-4"><input required placeholder="Titre de l'archive" className="w-full rounded border border-ink/15 bg-white px-3 py-2.5 text-sm" /><input required type="email" placeholder="Votre e-mail" className="w-full rounded border border-ink/15 bg-white px-3 py-2.5 text-sm" /><textarea required rows="4" placeholder="Décrivez cette archive..." className="w-full rounded border border-ink/15 bg-white px-3 py-2.5 text-sm" /><input type="file" accept="image/*,audio/*,video/*,.pdf" className="w-full text-sm" /><button type="submit" className="w-full rounded bg-gold px-4 py-3 text-sm font-semibold text-ink">Envoyer l'archive</button></form></>}</div></div>}
+      {modal === "guide" && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-5" role="dialog" aria-modal="true" aria-label="Guide des archives"><div className="relative w-full max-w-lg rounded bg-cream p-7 text-ink"><button type="button" onClick={() => setModal(null)} className="absolute right-3 top-3 rounded-full bg-ink/10 p-2" aria-label="Fermer"><X size={18} /></button><h3 className="font-display text-3xl">Guide des archives</h3><p className="mt-4 text-sm leading-relaxed text-ink/70">Préparez une image nette, indiquez sa date et son lieu, puis précisez les droits de diffusion dont vous disposez.</p><button type="button" onClick={() => setModal(null)} className="mt-6 rounded bg-forest px-4 py-2.5 text-sm font-semibold text-cream">J'ai compris</button></div></div>}
     </>
   );
 }
